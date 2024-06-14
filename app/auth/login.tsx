@@ -7,7 +7,7 @@ import { LoginShadcn } from '@/components/component/login-shadcn';
 export default function LoginForm() {
 
     const LoginGoogle = async () => {
-        'use server'
+      'use server'
         const supabase = createClient();
         const origin = headers().get('origin')
 
