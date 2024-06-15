@@ -1,33 +1,38 @@
-import { createClient } from "@/utils/supabase/client";
-
-
-//ShadCn
+// pages/index.tsx or wherever HomePage is located
+import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import LogouButton from "@/components/component/logoutButton";
 import Link from "next/link";
+import AddItemForm from "@/components/component/AddItemForm";
+import { redirect } from "next/navigation";
+import { Header } from "@/components/component/header";
 
 // async function checkUserSession() {
 //   const supabase = createClient();
-//   const user = supabase.auth.getUser();
-//   return user;
-
+  
+//   const { data, error } = await supabase.auth.getUser()
+//   if (error || !data?.user) {
+//     redirect('/auth/login')
+//   } else {
+//     console.log(data.user)
+//   }
 // }
 
 export default async function HomePage() {
- 
+  const supabase = createClient()
+
+  const { data, error } = await supabase.auth.getUser()
+  if(error) {
+    console.log(error)
+    // redirect('/auth/login')
+  }
+
 
   return (
-    <main className="container mx-auto m-10">
-      {/* {userSession.data.user ? (<LogouButton/>) : (<Button> <Link href="/auth"> Login</Link> </Button>)} */}
-
-      {/* <div className="flex justify-between">
-        <LogouButton />
-        <Link href="/auth">
-          <Button> Login</Button>
-        </Link>
-      </div> */}
-       <LogouButton />
+    <main className="container mx-auto">
+      <Header user={data.user}/>
+      
+      <AddItemForm />
     </main>
   );
 }
