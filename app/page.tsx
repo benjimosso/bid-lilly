@@ -15,16 +15,7 @@ import Link from "next/link";
 // }
 
 export default async function HomePage() {
-  // console.log(userSession);
-  // check if user is logged in
  
-  // const userSession = await checkUserSession(); 
-  // console.log(userSession);
-  const supabase = createClient();
-  supabase.auth.getUser().then((user) => {
-    user.data.user ? console.log("User is logged in") : console.log("User is not logged in")
-    console.log("HERE!",user);
-  });
 
   return (
     <main className="container mx-auto m-10">
