@@ -24,11 +24,13 @@ const AddItemForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Input name="name" placeholder="Item's name" className="w-full" />
-      <Button type="submit" className="w-full">Add Item</Button>
+    <div className="flex justify-center border w-2/3 m-4 p-5">
+    <form onSubmit={handleSubmit} >
+      <Input name="name" placeholder="Item's name" className=" my-4" />
+      <Button type="submit" className="">Add Item</Button>
       {error && <p className="text-red-500">{error}</p>}
     </form>
+    </div>
   );
 };
 
