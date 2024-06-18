@@ -1,11 +1,8 @@
 // pages/index.tsx or wherever HomePage is located
 import { createClient } from "@/utils/supabase/server";
 import Image from 'next/image'
-import LogouButton from "@/components/component/logoutButton";
 import Link from "next/link";
-import AddItemForm from "@/components/component/AddItemForm";
-import { redirect } from "next/navigation";
-import { Header } from "@/components/component/header";
+
 // shadCn
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +19,9 @@ interface Item {
   name: string;
   created_at: string;
   user_id: string; // UUIDs are typically represented as strings
+  image: string;
+  startingPrice: number;
+  description: string;
 }
 
 export default async function HomePage() {
@@ -38,22 +38,19 @@ export default async function HomePage() {
   } 
 
   return (
-    <main className="container mx-auto">
-      <Header user={data.user}/>
+    <div className="container mx-auto">
+     
       
       <h2 className="text-2xl font-bold mb-4"> Items to Bid on</h2>
-      <div className="grid grid-cols-4 gap-5">
-      {items && items.map((item, index) => (
-        <Card key={index}>
-          <CardHeader>
-            <CardTitle>{item.name}</CardTitle>
-            <CardDescription>
-              {item.created_at}
-            </CardDescription>
+      <div className="lg:grid lg:grid-cols-4 lg:gap-5 sm:space-y-0 space-y-8 ">
+      {items && items.map((item:Item, index) => (
+        <Card key={index} className="flex flex-col items-center">
+          <CardHeader className="mt-4">
+            {item.image ? <Image className="rounded-md" src={item.image} alt={item.name} width={200} height={200} /> : null} 
           </CardHeader>
-          <CardContent className="flex justify-center">
-            {item.image ? <Image src={item.image} alt={item.name} width={100} height={100} /> : null}
-            
+          <CardContent>
+            <CardTitle>{item.name}</CardTitle>
+            <CardDescription>Starting Price ${item.startingPrice}</CardDescription>
           </CardContent>
           <CardFooter>
             <Button>
@@ -64,6 +61,6 @@ export default async function HomePage() {
         ))}
       </div>
       
-    </main>
+    </div>
   );
 }

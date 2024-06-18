@@ -22,7 +22,6 @@ const AddItemForm = () => {
 //       router.refresh();
 //     }
 //   };
-
   return (
     <div className="flex justify-center border w-2/3 m-4 p-5">
     <form action={insertItem} >
