@@ -54,7 +54,7 @@ export default async function HomePage() {
           </CardContent>
           <CardFooter>
             <Button>
-              <Link href={`/items/${item.id}`}>View Item</Link>
+              <Link href={`/items/${item.id}`}>Bid on Item</Link>
             </Button>
           </CardFooter>
         </Card>
