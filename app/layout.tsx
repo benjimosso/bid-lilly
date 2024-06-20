@@ -35,7 +35,9 @@ export default async function RootLayout({
       >
         <main>
         <Header user={user.user}/>
+        <div className="container mx-auto py-12">
         {children}
+        </div>
         </main>
       </body>
     </html>

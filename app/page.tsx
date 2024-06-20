@@ -38,9 +38,7 @@ export default async function HomePage() {
   } 
 
   return (
-    <div className="container mx-auto">
-     
-      
+    <div className="">
       <h2 className="text-2xl font-bold mb-4"> Items to Bid on</h2>
       <div className="lg:grid lg:grid-cols-4 lg:gap-5 sm:space-y-0 space-y-8 ">
       {items && items.map((item:Item, index) => (
