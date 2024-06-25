@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export function Header({ user }: { user: any }) {
 
-  // console.log(user, "from header")
+  console.log(user, "from header")
 
   return (
     <header className="bg-gray-200 text-black p-4 mb-6 rounded-md">
