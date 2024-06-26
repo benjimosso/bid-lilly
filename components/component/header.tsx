@@ -21,7 +21,7 @@ export function Header({ user }: { user: any }) {
         </div>
         <div>
           {user ? (
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-center">
              {user.user_metadata.full_name}
             <LogouButton />
             </div>
