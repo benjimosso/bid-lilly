@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Header } from "@/components/component/header";
 // supabase
 import { createClient } from "@/utils/supabase/server";
+import { AppKnockProviders } from "./knock-providers";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -21,9 +22,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const supabase = createClient()
-  const { data:user, error } = await supabase.auth.getUser()
+  const supabase = createClient();
+  const { data: user, error } = await supabase.auth.getUser();
 
   return (
     <html lang="en">
@@ -34,10 +34,10 @@ export default async function RootLayout({
         )}
       >
         <main>
-        <Header user={user.user}/>
-        <div className="container mx-auto py-12">
-        {children}
-        </div>
+          <AppKnockProviders user={user.user}>
+            <Header user={user.user} />
+            <div className="container mx-auto py-12">{children}</div>
+          </AppKnockProviders>
         </main>
       </body>
     </html>
