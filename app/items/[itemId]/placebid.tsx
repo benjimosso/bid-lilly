@@ -7,6 +7,7 @@ import { useState } from "react";
 import { start } from "repl";
 import { useRouter } from "next/navigation";
 
+
 export default function PlaceBid({
   itemId,
   currentBid,
@@ -22,6 +23,8 @@ export default function PlaceBid({
   //   console.log("current bid: " ,currentBid, "starting Price: " ,startingPrice, "itemId: ", itemId);
   const router = useRouter();
 
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (bid <= startingPrice) {
@@ -30,7 +33,7 @@ export default function PlaceBid({
     }
     const supabase = createClient();
     const { data: user, error: userError } = await supabase.auth.getUser();
-    console.log("user", user?.user?.user_metadata?.last_name);
+    // console.log("user", user?.user?.user_metadata?.last_name);
     const { data, error } = await supabase
       .from("bids")
       .insert([

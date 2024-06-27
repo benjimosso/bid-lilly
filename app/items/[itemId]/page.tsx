@@ -1,29 +1,61 @@
+'use server'
 import React from "react";
-import { createClient } from "@/utils/supabase/server";
+// import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { getBids, getItems } from "./actions";
+import { getBids, getItems, getUser } from "./actions";
 import PlaceBid from "./placebid";
 import { formatDistance } from "date-fns";
+import { Knock } from "@knocklabs/node";
 
 export default async function ItemPage({
   params: { itemId },
 }: {
   params: { itemId: string };
 }) {
-  // const supabase = createClient();
-  // const { data: items, error } = await supabase
-  //   .from("items")
-  //   .select()
-  //   .eq("id", itemId)
-  //   .single();
-  // if (error) {
-  //   console.error(error);
-  // }
   const items = await getItems({ itemId });
   const bids = await getBids({ itemId });
+  const user = await getUser();
 
+  const knock = new Knock(process.env.KNOCK_SECRET_KEY || "");
+
+  const recipients: {
+    id: string;
+    name: string;
+  }[] = [];
+
+  if (bids) {
+    for (const bid of bids) {
+      if (
+        bid.user_id !== user?.user?.id &&
+        !recipients.find((recipient) => recipient.id === bid.user_id)
+      ) {
+        recipients.push({
+          id: bid.user_id,
+          name: bid.full_name ?? "Unknown",
+        });
+      }
+    }
+  }
+ 
+  if (recipients.length > 0) {
+    await knock.workflows.trigger("user-place-bid", {
+      actor: {
+        id: user?.user?.id ?? "Unknown",
+        name: user?.user?.user_metadata?.full_name ?? "Unknown",
+        collection: "users",
+      },
+      recipients,
+      data: {
+        item_id: itemId,
+        item_name: items?.name,
+        bid_amount: items?.amount,
+      },
+    });
+  }
+
+  console.log("RECIPIENTS ARRAY", recipients);
   if (!items) {
     return (
       <div className="space-y-8 flex flex-col items-center justify-center">
@@ -97,9 +129,7 @@ export default async function ItemPage({
                 <p className="text-xl">
                   Bid Amount: <span className="bold">${bid.amount}</span>
                 </p>
-                <p>
-                  Bidder: {bid.full_name}
-                </p>
+                <p>Bidder: {bid.full_name}</p>
               </div>
               <div>
                 <p>
