@@ -1,4 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
+import { Knock } from "@knocklabs/node";
+
+const knock = new Knock(process.env.KNOCK_SECRET_KEY || "");
 
 export async function getItems({itemId}: {itemId: string}) {
   const supabase = createClient();
@@ -17,3 +20,5 @@ export async function getBids({itemId}: {itemId: string}) {
   }
   return data;
 }
+
+// TODO: send notifications to all bidders when a new bid is placed
