@@ -51,6 +51,7 @@ export default async function ItemPage({
         item_id: itemId,
         item_name: items?.name,
         bid_amount: items?.amount,
+        test: "Esto es un test"
       },
     });
   }
@@ -113,6 +114,8 @@ export default async function ItemPage({
               itemId={itemId}
               currentBid={items.currentBid}
               startingPrice={items.startingPrice}
+              Placebids={bids}
+              items={items}
             />
           </div>
         </div>
