@@ -42,12 +42,13 @@ export default async function HomePage() {
       <h2 className="text-2xl font-bold mb-4"> Items to Bid on</h2>
       <div className="lg:grid lg:grid-cols-4 lg:gap-5 sm:space-y-0 space-y-8 ">
       {items && items.map((item:Item, index) => (
-        <Card key={index} className="flex flex-col items-center">
+        <Card key={index} className="flex flex-col items-center overflow-hidden whitespace-nowrap">
           <CardHeader className="mt-4">
-            {item.image ? <Image className="rounded-md" src={item.image} alt={item.name} width={200} height={200} /> : null} 
+            {item.image ? <Image className="rounded-md max-h-[258px]" src={item.image} alt={item.name} width={200} height={200} /> : null} 
           </CardHeader>
           <CardContent>
-            <CardTitle>{item.name}</CardTitle>
+            {item.name === "Summerland Horseback Rides" ? (<CardTitle className="text-xl">{item.name}</CardTitle>) : <CardTitle>{item.name}</CardTitle>}
+            
             <CardDescription>Starting Price ${item.startingPrice}</CardDescription>
           </CardContent>
           <CardFooter>
