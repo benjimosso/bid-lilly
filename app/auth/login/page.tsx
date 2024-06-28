@@ -22,26 +22,28 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
     } else {
-      router.refresh();
+      // router.refresh();
       router.push("/");
     }
-
   };
 
   const LoginGoogle = async function () {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `http://localhost:3000/auth/callback`,
-        },
-      })
-};
+      provider: "google",
+      options: {
+        redirectTo: `http://localhost:3000/auth/callback`,
+      },
+    });
+  };
 
   return (
-  <>
-  <LoginShadcn LoginEmail={LoginEmail} LoginGoogle={LoginGoogle}></LoginShadcn>;
-  {error && <p>{error}</p>}
-  </>
+    <>
+      <LoginShadcn
+        LoginEmail={LoginEmail}
+        LoginGoogle={LoginGoogle}
+      ></LoginShadcn>
+      ;{error && <p>{error}</p>}
+    </>
   );
 }

@@ -23,6 +23,7 @@ export default async function ItemPage({
   const recipients: {
     id: string;
     name: string;
+    email: string;
   }[] = [];
 
   if (bids) {
@@ -34,6 +35,7 @@ export default async function ItemPage({
         recipients.push({
           id: bid.user_id,
           name: bid.full_name ?? "Unknown",
+          email: bid.email ?? "Unknown",
         });
       }
     }
@@ -44,15 +46,17 @@ export default async function ItemPage({
       actor: {
         id: user?.user?.id ?? "Unknown",
         name: user?.user?.user_metadata?.full_name ?? "Unknown",
+        email: user?.user?.email ?? "Unknown",
         collection: "users",
       },
       recipients,
       data: {
         item_id: itemId,
         item_name: items?.name,
-        bid_amount: items?.amount,
-        test: "Esto es un test"
+        bid_amount: items?.currentBid,
+        
       },
+      
     });
   }
 

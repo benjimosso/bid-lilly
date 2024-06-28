@@ -49,6 +49,7 @@ export default function PlaceBid({
           amount: bid,
           user_id: user?.user?.id,
           full_name: user?.user?.user_metadata?.full_name,
+          email: user?.user?.email,
         },
       ]);
     if (error) {
