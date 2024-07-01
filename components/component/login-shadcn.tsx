@@ -18,12 +18,12 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { login } from "@/app/auth/login/actions";
 import Image  from "next/image";
+import { Divide } from "lucide-react";
 
 interface LoginFormProps {
   LoginEmail: (
-    e: React.FormEvent<HTMLFormElement>,
     email: string,
-    password: string
+    password: string,
   ) => Promise<void>;
   LoginGoogle: () => Promise<void>;
 }
@@ -31,6 +31,7 @@ interface LoginFormProps {
 export function LoginShadcn({ LoginEmail, LoginGoogle }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
 
   return (
     <Card className="mx-auto max-w-sm mt-10">
@@ -41,7 +42,10 @@ export function LoginShadcn({ LoginEmail, LoginGoogle }: LoginFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={(e) => LoginEmail(e, email, password)}>
+        <form onSubmit={async (e) => {
+          e.preventDefault();
+          await LoginEmail(email, password);
+        }}>
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -76,6 +80,7 @@ export function LoginShadcn({ LoginEmail, LoginGoogle }: LoginFormProps) {
               Login
             </Button>
           </div>
+        
           </form>
           <div className="mt-4 text-center text-sm">
             Don&rsquo;t have an account?
@@ -84,7 +89,9 @@ export function LoginShadcn({ LoginEmail, LoginGoogle }: LoginFormProps) {
             </Link>
           </div>
             <div className="flex items-center justify-center">
-            <button onClick={LoginGoogle} className="mt-5 " >
+            <button onClick={async () => {
+              await LoginGoogle();
+            }} className="mt-5 " >
               <Image src="/googleLogin.svg" alt="Google Logo" width={200} height={200} />
             </button>
             </div>

@@ -36,8 +36,8 @@ export function Header({ user }: { user: any }) {
               buttonRef={notifButtonRef}
               isVisible={isVisible}
               onClose={() => setIsVisible(false)}
-              renderItem={({ item, ...props }) => (
-                <NotificationCell {...props} item={item}>
+              renderItem={({item, ...props }) => (
+                <NotificationCell {...props} item={item} key={item.id}>
                   <div className="rounded-lg">
                     Item{" "}
                     <Link href={`/items/${item?.data?.item_id}`}>

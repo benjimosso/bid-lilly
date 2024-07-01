@@ -7,7 +7,7 @@ import { useState } from "react";
 import { start } from "repl";
 import { useRouter } from "next/navigation";
 import {Item, Bids} from "@/app/utils/interface";
-import { sendNotifications, getItems } from "./actions";
+
 
 
 
@@ -23,16 +23,20 @@ export default function PlaceBid({
   const [bid, setBid] = useState<number>(
     currentBid ? currentBid + 1 : startingPrice + 1
   );
+
+  
   
   //   console.log("current bid: " ,currentBid, "starting Price: " ,startingPrice, "itemId: ", itemId);
   const router = useRouter();
 
   
   return (
+    <>
     <form
       className="flex flex-col gap-5"
-      onSubmit={(e) => {
-        handleSubmit(e);
+      onSubmit={async (e) => {
+        e.preventDefault();
+        await handleSubmit(bid);
       }}
     >
       <Input
@@ -46,5 +50,9 @@ export default function PlaceBid({
         Place Bid
       </Button>
     </form>
+    {/* <div className="mt-7">
+      <Button onClick={async () => {handleSubmit(bid)}}>PRESS ME</Button>
+    </div> */}
+    </>
   );
 }

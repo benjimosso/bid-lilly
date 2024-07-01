@@ -1,14 +1,15 @@
 "use server";
 import React from "react";
-// import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { createBidAuction, getBids, getItems, getUser } from "./actions";
+import {getBids, getItems, getUser } from "./actions";
 import PlaceBid from "./placebid";
 import { Knock } from "@knocklabs/node";
 import { formatDate } from "@/app/utils/timeformat";
 import { format } from "date-fns";
+import { revalidatePath } from "next/cache";
 
 function BidOver(endDate: string) {
   return endDate < new Date().toISOString();
@@ -23,8 +24,83 @@ export default async function ItemPage({
   const bids = await getBids({ itemId });
   const user = await getUser();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, bid:number) => {
-    createBidAuction({e, bids, items, user, bid})
+  const handleSubmit = async (bid:number) => {
+    'use server'
+
+    console.log(bid)
+    if (bid <= items.startingPrice) {
+      alert("Bid must be higher than the current bid");
+      return;
+    }
+    const supabase = createClient();
+    console.log("user", user?.user?.user_metadata?.last_name);
+    const { data, error } = await supabase
+      .from("bids")
+      .insert([
+        {
+          item_id: items.id,
+          amount: bid,
+          user_id: user?.user?.id,
+          full_name: user?.user?.user_metadata?.full_name,
+          email: user?.user?.email,
+        },
+      ]);
+    if (error) {
+      console.error(error);
+      return;
+    }
+    const { data: dataUpdate, error: updateError } = await supabase
+      .from("items")
+      .update({ currentBid: bid })
+      .eq("id", items.id)
+      .select();
+    if (updateError) {
+      console.error(updateError);
+    }
+    console.log("dataUpdate", dataUpdate);
+
+    const knock = new Knock(process.env.KNOCK_SECRET_KEY || "");
+  
+  const recipients: {
+    id: string;
+    name: string;
+    email: string;
+  }[] = [];
+
+  if (bids) {
+    for (const bid of bids) {
+      console.log("here!!!", bid.user_id, user?.user?.id);
+      if (
+        bid.user_id !== user?.user?.id &&
+        !recipients.find((recipient) => recipient.id === bid.user_id)
+      ) {
+        recipients.push({
+          id: bid.user_id,
+          name: bid.full_name ?? "Unknown",
+          email: bid.email ?? "Unknown",
+        });
+      }
+    }
+  }
+
+  if (recipients.length > 0) {
+    await knock.workflows.trigger("user-place-bid", {
+      actor: {
+        id: user?.user?.id ?? "Unknown",
+        name: user?.user?.user_metadata?.full_name ?? "Unknown",
+        email: user?.user?.email ?? "Unknown",
+        collection: "users",
+      },
+      recipients,
+      data: {
+        item_id: items?.id,
+        item_name: items?.name,
+        bid_amount: bid,
+      },
+    });
+  }
+  console.log("RECIPIENTS ARRAY", recipients);
+  revalidatePath(`/items/${items.id}`);
   }
 
   
@@ -93,6 +169,7 @@ export default async function ItemPage({
               currentBid={items.currentBid}
               startingPrice={items.startingPrice}
             />
+           
           </div>
         </div>
       </div>

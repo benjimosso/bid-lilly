@@ -1,40 +1,44 @@
-"use client";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { LoginShadcn } from "@/components/component/login-shadcn";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+
+  let loginError = null;
 
   const LoginEmail = async function (
-    e: React.FormEvent<HTMLFormElement>,
     email: string,
-    password: string
+    password: string,
   ) {
+    'use server'
     const supabase = createClient();
-    e.preventDefault();
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
-      setError(error.message);
+      console.error("Error logging in:", error.message);
+      loginError = error.message;
     } else {
-      // router.refresh();
-      router.push("/");
+      revalidatePath("/");
+      redirect("/");
     }
   };
 
   const LoginGoogle = async function () {
+    'use server'
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const {data, error} = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `http://localhost:3000/auth/callback`,
       },
     });
+    if (data.url) {
+      redirect(data.url);
+    }
   };
 
   return (
@@ -43,7 +47,7 @@ export default function LoginPage() {
         LoginEmail={LoginEmail}
         LoginGoogle={LoginGoogle}
       ></LoginShadcn>
-      ;{error && <p>{error}</p>}
+     {loginError && <div>{loginError}</div>}
     </>
   );
 }
