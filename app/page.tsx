@@ -13,16 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {Item} from "@/app/utils/interface"
 
-interface Item {
-  id: number;
-  name: string;
-  created_at: string;
-  user_id: string; // UUIDs are typically represented as strings
-  image: string;
-  startingPrice: number;
-  description: string;
-}
 
 export default async function HomePage() {
   const supabase = createClient()
@@ -32,7 +24,7 @@ export default async function HomePage() {
     console.log(error)
     // redirect('/auth/login')
   }
-  const { data:items, error: itemsError }= await supabase.from('items').select('*')
+  const { data:items, error: itemsError }= await supabase.from('items').select('*').order('id', {ascending: true})
   if(itemsError) {
     console.log(itemsError)
   } 

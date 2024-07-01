@@ -1,13 +1,18 @@
-'use server'
+"use server";
 import React from "react";
 // import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { getBids, getItems, getUser } from "./actions";
+import { createBidAuction, getBids, getItems, getUser } from "./actions";
 import PlaceBid from "./placebid";
-import { formatDistance } from "date-fns";
 import { Knock } from "@knocklabs/node";
+import { formatDate } from "@/app/utils/timeformat";
+import { format } from "date-fns";
+
+function BidOver(endDate: string) {
+  return endDate < new Date().toISOString();
+}
 
 export default async function ItemPage({
   params: { itemId },
@@ -18,49 +23,11 @@ export default async function ItemPage({
   const bids = await getBids({ itemId });
   const user = await getUser();
 
-  const knock = new Knock(process.env.KNOCK_SECRET_KEY || "");
-
-  const recipients: {
-    id: string;
-    name: string;
-    email: string;
-  }[] = [];
-
-  if (bids) {
-    for (const bid of bids) {
-      if (
-        bid.user_id !== user?.user?.id &&
-        !recipients.find((recipient) => recipient.id === bid.user_id)
-      ) {
-        recipients.push({
-          id: bid.user_id,
-          name: bid.full_name ?? "Unknown",
-          email: bid.email ?? "Unknown",
-        });
-      }
-    }
-  }
- 
-  if (recipients.length > 0) {
-    await knock.workflows.trigger("user-place-bid", {
-      actor: {
-        id: user?.user?.id ?? "Unknown",
-        name: user?.user?.user_metadata?.full_name ?? "Unknown",
-        email: user?.user?.email ?? "Unknown",
-        collection: "users",
-      },
-      recipients,
-      data: {
-        item_id: itemId,
-        item_name: items?.name,
-        bid_amount: items?.currentBid,
-        
-      },
-      
-    });
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, bid:number) => {
+    createBidAuction({e, bids, items, user, bid})
   }
 
-  console.log("RECIPIENTS ARRAY", recipients);
+  
   if (!items) {
     return (
       <div className="space-y-8 flex flex-col items-center justify-center">
@@ -86,7 +53,7 @@ export default async function ItemPage({
   return (
     <main className=" space-y-8">
       <div>
-        <h1 className="text-4xl font-bold">{items.name}</h1>
+        <h1 className="text-4xl font-bold mb-4">{items.name}</h1>
         <div className="lg:grid lg:grid-cols-2 lg:gap-5 ">
           <div>
             <Image
@@ -109,17 +76,22 @@ export default async function ItemPage({
               ) : (
                 <p className="mt-7 text-xl">No Bids yet</p>
               )}
+              {BidOver(items.endDate) ? (
+                <p>Auction is over!</p>
+              ) : (
+                <p className="text-lg">
+                  This Auction Ends On: {format(items.endDate, "eeee M/dd/yy")}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-6 mt-6 lg:mt-0">
             <p>{items.description}</p>
             {/* <div>Starting Price: <span className="bold">${items.startingPrice}</span></div> */}
             <PlaceBid
-              itemId={itemId}
+              handleSubmit={handleSubmit}
               currentBid={items.currentBid}
               startingPrice={items.startingPrice}
-              Placebids={bids}
-              items={items}
             />
           </div>
         </div>
@@ -139,11 +111,7 @@ export default async function ItemPage({
                 <p>Bidder: {bid.full_name}</p>
               </div>
               <div>
-                <p>
-                  {formatDistance(bid.created_at, new Date(), {
-                    addSuffix: true,
-                  })}
-                </p>
+                <p>{formatDate(bid.created_at)}</p>
               </div>
             </div>
           ))}
