@@ -7,6 +7,7 @@ export interface Item {
     startingPrice: number;
     description: string;
     currentBid: number;
+    emailSent: boolean;
   }
 
   export interface Bids {
@@ -16,4 +17,5 @@ export interface Item {
     full_name: string;
     email: string;
     user_id: string;
+    item_id: number;
   }

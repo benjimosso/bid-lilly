@@ -1,12 +1,9 @@
 "use client";
-import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { useState } from "react";
-import { start } from "repl";
 import { useRouter } from "next/navigation";
-import {Item, Bids} from "@/app/utils/interface";
+
 
 
 

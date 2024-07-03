@@ -1,5 +1,4 @@
 "use server";
-import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -27,13 +26,11 @@ export default async function ItemPage({
   const handleSubmit = async (bid:number) => {
     'use server'
 
-    console.log(bid)
     if (bid <= items.startingPrice) {
       alert("Bid must be higher than the current bid");
       return;
     }
     const supabase = createClient();
-    console.log("user", user?.user?.user_metadata?.last_name);
     const { data, error } = await supabase
       .from("bids")
       .insert([
@@ -164,11 +161,12 @@ export default async function ItemPage({
           <div className="flex flex-col gap-6 mt-6 lg:mt-0">
             <p>{items.description}</p>
             {/* <div>Starting Price: <span className="bold">${items.startingPrice}</span></div> */}
-            <PlaceBid
+            {user.user && !BidOver(items.endDate) ? ( <PlaceBid
               handleSubmit={handleSubmit}
               currentBid={items.currentBid}
               startingPrice={items.startingPrice}
-            />
+            />) : null}
+           
            
           </div>
         </div>
