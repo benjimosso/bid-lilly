@@ -23,7 +23,8 @@ interface LoginFormProps {
     email: string,
     password: string,
     first_name: string,
-    last_name: string
+    last_name: string,
+    phone: string
   ) => Promise<void>;
 }
 
@@ -32,6 +33,7 @@ export function SignupShad({ handleSubmit }: LoginFormProps) {
   const [password, setPassword] = useState("");
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
 
   return (
     <Card className="mx-auto max-w-sm">
@@ -43,7 +45,7 @@ export function SignupShad({ handleSubmit }: LoginFormProps) {
       </CardHeader>
       <form
         onSubmit={(e) =>
-          handleSubmit(e, email, password, first_name, last_name)
+          handleSubmit(e, email, password, first_name, last_name, phone)
         }
       >
         <CardContent>
@@ -67,6 +69,18 @@ export function SignupShad({ handleSubmit }: LoginFormProps) {
                   required
                   value={last_name}
                   onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1">
+              <div className="grid gap-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  placeholder="805-456-7890"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
             </div>

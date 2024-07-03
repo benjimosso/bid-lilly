@@ -19,12 +19,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Item } from "@/app/utils/interface";
-import { POST } from "@/app/api/send/route";
+import { Resend } from "resend";
+import { EmailTemplate } from "@/components/email-template";
 
 export default async function HomePage() {
   const items = await getItems();
   const bids = await getBids();
   const user = await getUser();
+
+  async function sendEmail(
+    name: string,
+    itemName: string,
+    email: string,
+    itemId: number,
+    itemImage: string,
+    amount: number
+  ) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    const { data, error } = await resend.emails.send({
+      from: 'Bid For Lilly <team@bid-lilly.online>',
+      to: [email],
+      subject: 'You Won The Bid!',
+      react: EmailTemplate({ name, itemName, itemId, itemImage, amount})as React.ReactElement,
+    });
+    if (error) {
+      return Response.json({ error }, { status: 500 });
+    }
+    console.log(data); 
+  }
+
   let finalItems: {
     name: string;
     amount: number;
@@ -49,16 +73,18 @@ export default async function HomePage() {
                 item: item,
                 email: bid.email,
               });
-              await POST({name: bid.full_name, itemName: item.name, email: bid.email, itemId: item.id, itemImage: item.image, amount: bid.amount}); 
-              await emailSent({ itemId: item.id });
-            }
+              await sendEmail(bid.full_name, item.name, bid.email, item.id, item.image, bid.amount);
+              await emailSent({ itemId: item.id }); 
+            } 
           })
         );
       }
     })
   );
   console.log(finalItems);
-
+  if (!user.user?.phone){
+    console.log("Please add your phone number to your account to receive notifications");
+  }
   return (
     <div className="">
       <h2 className="text-2xl font-bold mb-4"> Items to Bid on</h2>

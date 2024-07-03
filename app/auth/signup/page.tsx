@@ -14,20 +14,23 @@ export default function Singup() {
     email: string,
     password: string,
     first_name: string,
-    last_name: string
+    last_name: string,
+    phone: string
   ) => {
     e.preventDefault();
-    // console.log("Email: ", email, "Password: ", password);
+    console.log("Email: ", email, "Password: ", password, "First Name: ", first_name, "Last Name: ", last_name, "Phone: ", phone);
     const supabase = createClient();
     const { error, data } = await supabase.auth.signUp({
       email,
       password,
+      
       options: {
         // emailRedirectTo: `${location.origin}/api/auth/callback`,
         data: {
           first_name,
           last_name,
           full_name: `${first_name} ${last_name}`,
+          phone_number: phone,
         },
       },
     });
