@@ -36,5 +36,6 @@ export async function emailSent({ itemId }: { itemId: number}) {
     if (error) {
       console.error(error);
     }
+    console.log("Item ID", itemId)
     console.log("EmailSent Function Response:", data);
 }

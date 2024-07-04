@@ -35,9 +35,6 @@ export default async function HomePage() {
     itemImage: string,
     amount: number
   ) {
-
-    
-
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { data, error } = await resend.emails.send({
@@ -59,7 +56,6 @@ export default async function HomePage() {
       console.log("Email Sent", data);
       await emailSent({ itemId });
     }
-     
   }
 
   let Winners: {
@@ -95,7 +91,7 @@ export default async function HomePage() {
   if (Winners.length > 0) {
     console.log("Winners", Winners, Winners.length);
     Winners.map(async (winner) => {
-      sendEmail(
+      await sendEmail(
         winner.name,
         winner.itemName,
         winner.email,
