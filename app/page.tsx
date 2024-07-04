@@ -46,7 +46,8 @@ export default async function HomePage() {
     if (error) {
       return Response.json({ error }, { status: 500 });
     }
-    console.log(data); 
+    console.log(data);
+    await emailSent({ itemId: itemId}); 
   }
 
   let finalItems: {
@@ -74,7 +75,6 @@ export default async function HomePage() {
                 email: bid.email,
               });
               await sendEmail(bid.full_name, item.name, bid.email, item.id, item.image, bid.amount);
-              await emailSent({ itemId: item.id }); 
             } 
           })
         );
