@@ -53,7 +53,8 @@ export default async function HomePage() {
       return Response.json({ error }, { status: 500 });
     }
     console.log(data);
-    emailSent({ itemId: itemId });
+    const EmailSentResponse = await emailSent({ itemId });
+    console.log(EmailSentResponse); 
   }
 
   let Winners: {
@@ -65,10 +66,9 @@ export default async function HomePage() {
     itemImage: string;
   }[] = [];
 
-  items.map(async (item: Item) => {
+  items.map((item: Item) => {
     if (item.endDate < new Date().toISOString()) {
-      console.log(item.name, "Item is over");
-      bids?.map(async (bid: Bids) => {
+      bids?.map((bid: Bids) => {
         if (
           item.id === bid.item_id &&
           item.currentBid === bid.amount &&
@@ -88,7 +88,7 @@ export default async function HomePage() {
   });
 
   if (Winners.length > 0) {
-    console.log("Winners", Winners);
+    console.log("Winners", Winners, Winners.length);
     Winners.map(async (winner) => {
       sendEmail(
         winner.name,
