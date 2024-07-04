@@ -36,7 +36,7 @@ export default async function HomePage() {
     amount: number
   ) {
 
-    await emailSent({ itemId });
+    
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -55,7 +55,10 @@ export default async function HomePage() {
     if (error) {
       return Response.json({ error }, { status: 500 });
     }
-    console.log( "RESEND Response",data);
+    if (data) {
+      console.log("Email Sent", data);
+      await emailSent({ itemId });
+    }
      
   }
 
