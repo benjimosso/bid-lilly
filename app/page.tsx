@@ -47,7 +47,7 @@ export default async function HomePage() {
       return Response.json({ error }, { status: 500 });
     }
     console.log(data);
-    await emailSent({ itemId: itemId}); 
+    emailSent({ itemId: itemId}); 
   }
 
   let finalItems: {
