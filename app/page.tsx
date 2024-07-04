@@ -35,6 +35,9 @@ export default async function HomePage() {
     itemImage: string,
     amount: number
   ) {
+
+    await emailSent({ itemId });
+
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { data, error } = await resend.emails.send({
@@ -52,9 +55,8 @@ export default async function HomePage() {
     if (error) {
       return Response.json({ error }, { status: 500 });
     }
-    console.log(data);
-    const EmailSentResponse = await emailSent({ itemId });
-    console.log(EmailSentResponse); 
+    console.log( "RESEND Response",data);
+     
   }
 
   let Winners: {

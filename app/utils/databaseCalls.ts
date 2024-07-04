@@ -33,4 +33,8 @@ export async function getUser() {
 export async function emailSent({ itemId }: { itemId: number}) {
     const supabase = createClient();
     const { data, error } = await supabase.from("items").update({ emailSent: true }).eq("id", itemId).select();
+    if (error) {
+      console.error(error);
+    }
+    console.log("EmailSent Function Response:", data);
 }
