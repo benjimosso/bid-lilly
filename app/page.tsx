@@ -90,16 +90,16 @@ export default async function HomePage() {
 
   if (Winners.length > 0) {
     console.log("Winners", Winners, Winners.length);
-    Winners.map(async (winner) => {
-      await sendEmail(
-        winner.name,
-        winner.itemName,
-        winner.email,
-        winner.itemId,
-        winner.itemImage,
-        winner.amount
-      );
-    });
+    // Winners.map(async (winner) => {
+    //   await sendEmail(
+    //     winner.name,
+    //     winner.itemName,
+    //     winner.email,
+    //     winner.itemId,
+    //     winner.itemImage,
+    //     winner.amount
+    //   );
+    // });
   }
   if (!user.user?.phone) {
     console.log(
