@@ -20,7 +20,7 @@ export default function LoginPage() {
     });
     if (error) {
       console.error("Error logging in:", error.message);
-      loginError = error.message;
+      // loginError = error.message;
     } else {
       revalidatePath("/");
       redirect("/");

@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { Item, Bids } from "@/app/utils/interface";
+import { Type } from "lucide-react";
 
 export async function getItems() {
   const supabase = createClient();
@@ -36,6 +37,6 @@ export async function emailSent({ itemId }: { itemId: number}) {
     if (error) {
       console.error(error);
     }
-    console.log("Item ID", itemId)
+    console.log("Item ID", itemId, "Type:", typeof itemId)
     console.log("EmailSent Function Response:", data);
 }
