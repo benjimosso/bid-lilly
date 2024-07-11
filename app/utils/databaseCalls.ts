@@ -33,9 +33,9 @@ export async function getUser() {
 }
 export async function emailSent({ itemId }: { itemId: number}) {
     const supabase = createClient();
-    const { data, error } = await supabase.from("items").update({ emailSent: true }).eq("id", itemId).select();
+    const {data, error} = await supabase.rpc('update_email_sent_status', {p_id: itemId});
     if (error) {
-      console.error(error);
+        console.error("Error in emailSent function:", error);
     }
     console.log("Item ID", itemId, "Type:", typeof itemId)
     console.log("EmailSent Function Response:", data);
