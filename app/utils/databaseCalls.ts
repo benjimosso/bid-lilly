@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { Item, Bids } from "@/app/utils/interface";
-import { Type } from "lucide-react";
+import twilio from "twilio";
 
 export async function getItems() {
   const supabase = createClient();
@@ -31,12 +31,28 @@ export async function getUser() {
   }
   return data;
 }
-export async function emailSent({ itemId }: { itemId: number}) {
-    const supabase = createClient();
-    const {data, error} = await supabase.rpc('update_email_sent_status', {p_id: itemId});
-    if (error) {
-        console.error("Error in emailSent function:", error);
-    }
-    console.log("Item ID", itemId, "Type:", typeof itemId)
-    console.log("EmailSent Function Response:", data);
+export async function emailSent({ itemId }: { itemId: number }) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("update_email_sent_status", {
+    p_id: itemId,
+  });
+  if (error) {
+    console.error("Error in emailSent function:", error);
+  }
+  console.log("Item ID", itemId, "Type:", typeof itemId);
+  console.log("EmailSent Function Response:", data);
+}
+
+export async function sendMessages() {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const client = twilio(accountSid, authToken);
+
+  const message = await client.messages.create({
+    body: "Hello this is a test.",
+    from: "+18337745285",
+    to: "+18056375758",
+  });
+  
+  console.log(message.body);
 }
