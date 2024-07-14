@@ -1,5 +1,7 @@
-import { createClient } from "@/utils/supabase/server";
 import { PaymentAmount } from "@/app/utils/databaseCalls";
+import {loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js"; 
+
 
 export default async function PaymentPage({
   params: { id },
