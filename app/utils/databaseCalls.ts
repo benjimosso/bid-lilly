@@ -56,3 +56,17 @@ export async function sendMessages() {
   
   console.log(message.body);
 }
+
+export async function PaymentAmount({ id }: { id: string }) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("items")
+    .select("currentBid")
+    .eq("id", id);
+  if (error) {
+    console.error("Error in PaymentAmount function:", error);
+  }
+  console.log("Item ID", id, "Type:", typeof id);
+  
+  return data
+}
