@@ -53,13 +53,13 @@ export async function GET() {
 
     const sendEmailPromises = items.map((item: Item) => {
       if (item.endDate < new Date().toISOString()) {
-        return bids?.map((bid: Bids) => {
+        return bids?.map(async (bid: Bids) => {
           if (
             item.id === bid.item_id &&
             item.currentBid === bid.amount &&
             !item.emailSent
           ) {
-            return sendEmail(
+            return await sendEmail(
               bid.full_name,
               item.name,
               bid.email,
