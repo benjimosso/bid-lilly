@@ -11,6 +11,7 @@ import {
   CardContent,
   Card,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,8 @@ export function SignupShad({ handleSubmit }: LoginFormProps) {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-
+  const [optIn, setOptIn] = useState(false);
+  console.log(optIn)
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -82,6 +84,17 @@ export function SignupShad({ handleSubmit }: LoginFormProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
+                <div className="flex gap-3">
+                <Checkbox
+                    id="opt-in"
+                    checked={optIn}
+                    onCheckedChange={(checked) => setOptIn(checked === true)}
+                  />
+                <Label htmlFor="opt-in" className="text-sm">I would like to receive SMS notifications</Label>
+                </div>
+                
+                 
+                
               </div>
             </div>
             <div className="grid gap-2">
