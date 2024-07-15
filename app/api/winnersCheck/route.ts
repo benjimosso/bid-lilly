@@ -36,7 +36,7 @@ async function sendEmail(
     if (data) {
       console.log("Email Sent", data);
       await emailSent({ itemId });
-      await sendMessages();
+      // await sendMessages();
       return true;
     }
   } catch (error) {
