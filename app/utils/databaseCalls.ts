@@ -43,15 +43,15 @@ export async function emailSent({ itemId }: { itemId: number }) {
   console.log("EmailSent Function Response:", data);
 }
 
-export async function sendMessages() {
+export async function sendMessages({ itemId }: { itemId: number }) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = twilio(accountSid, authToken);
 
   const message = await client.messages.create({
-    body: "Hello this is a test from the bid-lilly app.",
+    body: `You won the bid! follow the link to pay `, // Add link to payment page (twilio is blocking the link)
     from: "+18337745285",
-    to: "+13108900647",
+    to: "+13108900647", // Add user phone number with dynamic data
   });
   
   console.log("SMS Sent")

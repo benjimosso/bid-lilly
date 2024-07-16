@@ -27,7 +27,7 @@ async function sendEmail(
         amount,
       }) as React.ReactElement,
     });
-    await sendMessages();
+    await sendMessages({ itemId });
     if (error) {
       console.error("Error sending email:", error);
       return false;
