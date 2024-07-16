@@ -49,11 +49,12 @@ export async function sendMessages() {
   const client = twilio(accountSid, authToken);
 
   const message = await client.messages.create({
-    body: "Hello this is a test.",
+    body: "Hello this is a test from the bid-lilly app.",
     from: "+18337745285",
-    to: "+18056375758",
+    to: "+13108900647",
   });
   
+  console.log("SMS Sent")
   console.log(message.body);
 }
 
