@@ -51,7 +51,7 @@ export async function sendMessages({ itemId }: { itemId: number }) {
   const message = await client.messages.create({
     body: `You won the bid! follow the link to pay `, // Add link to payment page (twilio is blocking the link)
     from: "+18337745285",
-    to: "+13108900647", // Add user phone number with dynamic data
+    to: "+18056375758", // Add user phone number with dynamic data
   });
   
   console.log("SMS Sent")
