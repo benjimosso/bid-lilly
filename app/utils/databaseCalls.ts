@@ -49,7 +49,7 @@ export async function sendMessages({ itemId }: { itemId: number }) {
   const client = twilio(accountSid, authToken);
 
   const message = await client.messages.create({
-    body: `You won the bid! follow the link to pay `, // Add link to payment page (twilio is blocking the link)
+    body: `You won the bid! follow the link to pay https://www.bid-lilly.online/pay/${itemId}`, // Add link to payment page (twilio is blocking the link)
     from: "+18337745285",
     to: "+18056375758", // Add user phone number with dynamic data
   });

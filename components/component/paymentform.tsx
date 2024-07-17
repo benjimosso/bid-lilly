@@ -7,6 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { Button } from "../ui/button";
 import convertToSubcurrency from "@/app/utils/convertToSubcurrency";
+import { Input } from "../ui/input";
 
 export default function PaymentForm({ amount }: { amount: number }) {
   const stripe = useStripe();
@@ -15,6 +16,9 @@ export default function PaymentForm({ amount }: { amount: number }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [succeeded, setSucceeded] = useState<boolean>(false);
   const [clientSecret, setClientSecret] = useState<string | null>("");
+  const [email, setEmail] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/create-payment-intent", {
@@ -54,6 +58,7 @@ export default function PaymentForm({ amount }: { amount: number }) {
             clientSecret: clientSecret as string,
             confirmParams: {
                 return_url: `${window.location.origin}/payment-success?amount=${amount}`,
+                receipt_email: email,
             },
         });
 
@@ -64,6 +69,8 @@ export default function PaymentForm({ amount }: { amount: number }) {
     
         } else {
             // Payment has been processed!
+            setSucceeded(true);
+            
         }
         setLoading(false);
     }
@@ -84,6 +91,32 @@ export default function PaymentForm({ amount }: { amount: number }) {
       }
   return (
     <form onSubmit={handleSubmit}>
+      <Input 
+      className="mb-5 text-black"
+      type="email"
+      placeholder="Email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      required
+      />
+      <div className="flex my-6 gap-5">
+        <Input
+        className=" text-black" 
+        type="text"
+        placeholder="First Name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        required
+        />
+        <Input 
+        className=" text-black" 
+        type="text"
+        placeholder="Last Name"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        required
+        />
+      </div>
       {clientSecret && <PaymentElement />}
 
       {error && <div>{error}</div>}
