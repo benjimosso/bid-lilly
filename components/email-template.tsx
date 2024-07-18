@@ -21,7 +21,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     <p>
       You have won the bid for {itemName} with an amount of ${amount}. Please
       click the link below to pay for the item.
-      <a href={`https://bid-lilly.online/pay/${itemId}`}> Pay Now</a> 
+      <a href={`https://bid-lilly.vercel.app/stripe-checkout/${itemId}`}> Pay Now</a> 
       </p>
     
     <img src={itemImage} alt={itemName} width={300} height={300} />

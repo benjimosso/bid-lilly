@@ -8,6 +8,7 @@ export interface Item {
     description: string;
     currentBid: number;
     emailSent: boolean;
+    stripe_Price_id: string;
   }
 
   export interface Bids {
