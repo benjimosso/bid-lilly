@@ -49,7 +49,7 @@ export async function sendMessages({ itemId }: { itemId: number }) {
   const client = twilio(accountSid, authToken);
 
   const message = await client.messages.create({
-    body: `You won the bid! follow the link to pay https://www.bid-lilly.online/pay/${itemId}`, // Add link to payment page (twilio is blocking the link)
+    body: `You won the bid! follow the link to pay https://bid-lilly.vercel.app//pay/${itemId}`, // Add link to payment page (twilio is blocking the link)
     from: "+18337745285",
     to: "+18056375758", // Add user phone number with dynamic data
   });
@@ -70,4 +70,14 @@ export async function PaymentAmount({ id }: { id: string }) {
   console.log("Item ID", id, "Type:", typeof id);
   
   return data
+}
+
+
+export async function getSingleItem({itemId}: {itemId: string}) {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("items").select("*").eq("id", itemId).single();
+  if (error) {
+    console.error(error);
+  }
+  return data as Item;
 }
