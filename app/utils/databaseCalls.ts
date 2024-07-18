@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { Item, Bids } from "@/app/utils/interface";
 import twilio from "twilio";
+import { Resend } from "resend";
+import { EmailTemplate } from "@/components/email-template";
 
 export async function getItems() {
   const supabase = createClient();
@@ -43,7 +45,18 @@ export async function emailSent({ itemId }: { itemId: number }) {
   console.log("EmailSent Function Response:", data);
 }
 
-export async function sendMessages({ itemId, phone_number }: { itemId: number, phone_number: string }) {
+export async function smsSent({ itemId }: { itemId: number }) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("sms_sent_status", {
+    p_id: itemId,
+  });
+  if (error) {
+    console.error("Error in smsSent function:", error);
+  }
+  console.log("SMS_Sent Function Response:", data);
+}
+
+export async function sendSMS({ itemId, phone_number }: { itemId: number, phone_number: string }) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = twilio(accountSid, authToken);
@@ -53,9 +66,14 @@ export async function sendMessages({ itemId, phone_number }: { itemId: number, p
     from: "+18337745285",
     to: phone_number, // Add user phone number with dynamic data
   });
-  
-  console.log("SMS Sent")
-  console.log(message.body);
+  if (message.errorCode) {
+    console.error("Error in sendSMS function:", message.errorCode);
+  }
+  if (message) {
+    console.log("SMS Sent", message);
+    await smsSent({ itemId });
+  }
+  return message;
 }
 
 export async function PaymentAmount({ id }: { id: string }) {
@@ -80,4 +98,46 @@ export async function getSingleItem({itemId}: {itemId: string}) {
     console.error(error);
   }
   return data as Item;
+}
+
+export async function sendEmail(
+  name: string,
+  itemName: string,
+  email: string,
+  itemId: number,
+  itemImage: string,
+  amount: number,
+  phone_number: string
+) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "Bid For Lilly <team@bid-lilly.online>",
+      to: [email],
+      subject: "You Won The Bid!",
+      react: EmailTemplate({
+        name,
+        itemName,
+        itemId,
+        itemImage,
+        amount,
+      }) as React.ReactElement,
+    });
+    if (error) {
+      console.error("Error sending email:", error);
+      return false;
+    }
+
+    if (data) {
+      console.log("Email Sent", data);
+      await emailSent({ itemId });
+      // await sendMessages();
+      return true;
+    }
+    
+  } catch (error) {
+    console.error("Error in sendEmail function:", error);
+    return false;
+  }
 }

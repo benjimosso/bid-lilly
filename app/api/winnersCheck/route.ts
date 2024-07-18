@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { emailSent, getBids, getItems, sendMessages } from "../../utils/databaseCalls";
+import { emailSent, getBids, getItems, sendSMS } from "../../utils/databaseCalls";
 import { EmailTemplate } from "../../../components/email-template";
 import { Item, Bids } from "../../utils/interface";
 
@@ -28,7 +28,7 @@ async function sendEmail(
         amount,
       }) as React.ReactElement,
     });
-    await sendMessages({ itemId, phone_number });
+    await sendSMS({ itemId, phone_number });
     if (error) {
       console.error("Error sending email:", error);
       return false;
@@ -36,7 +36,7 @@ async function sendEmail(
 
     if (data) {
       console.log("Email Sent", data);
-      await emailSent({ itemId });
+      
       // await sendMessages();
       return true;
     }
