@@ -9,18 +9,18 @@ import {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function CheckoutEmbeded({item}: {item: string}) {
-  const fetchClientSecret = useCallback(() => {
+  const fetchClientSecret = useCallback(async () => {
     // Create a Checkout Session
-    return fetch("/api/checkout_sessions", {
+    const res = await fetch("/api/checkout_session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({item}),
-    })
-      .then((res) => res.json())
-      .then((data) => data.clientSecret);
-  }, []);
+      body: JSON.stringify( item ),
+    });
+    const data = await res.json();
+    return data.clientSecret;
+  }, [item]);
 
   const options = {fetchClientSecret};
 

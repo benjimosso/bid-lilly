@@ -12,7 +12,6 @@ export default async function IndexStripePayment({
     console.log("Item:", item.name);
   return (
     <div>
-      <span>you are on id: {id}</span>
         <CheckoutEmbeded item={item.stripe_Price_id} />
     </div>
   )
