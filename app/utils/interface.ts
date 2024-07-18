@@ -19,4 +19,5 @@ export interface Item {
     email: string;
     user_id: string;
     item_id: number;
+    phone_number: string;
   }

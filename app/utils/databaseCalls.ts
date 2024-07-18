@@ -43,7 +43,7 @@ export async function emailSent({ itemId }: { itemId: number }) {
   console.log("EmailSent Function Response:", data);
 }
 
-export async function sendMessages({ itemId }: { itemId: number }) {
+export async function sendMessages({ itemId, phone_number }: { itemId: number, phone_number: string }) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = twilio(accountSid, authToken);
@@ -51,7 +51,7 @@ export async function sendMessages({ itemId }: { itemId: number }) {
   const message = await client.messages.create({
     body: `You won the bid! for  follow the link to pay https://bid-lilly.vercel.app/stripe-checkout/${itemId}`, // Add link to payment page (twilio is blocking the link)
     from: "+18337745285",
-    to: "+18056375758", // Add user phone number with dynamic data
+    to: phone_number, // Add user phone number with dynamic data
   });
   
   console.log("SMS Sent")
