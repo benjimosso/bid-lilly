@@ -20,10 +20,9 @@ export function Header({ user }: { user: any }) {
         <div className="flex gap-6">
           <Link href="/" className="hover:underline flex items-center gap-4">
             <Image src="/next.svg" alt="logo" width={40} height={40} />
-            Bid For Lilly
           </Link>
-          <Link className="hover:underline" href={"/auctions"}>
-            <h3>My Auctions</h3>
+          <Link className="hover:underline" href={"/winners"}>
+            <h3>Winners</h3>
           </Link>
         </div>
         <div className="flex  gap-5">
