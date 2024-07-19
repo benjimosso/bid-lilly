@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
             itemName: winner.items.name,
             amount: winner.items.currentBid,
             first_name: winner.first_name,
+            SSM_image: winner.items.MMS_image,
           });
           return;
         }
@@ -45,6 +46,7 @@ export async function POST(req: NextRequest) {
             itemName: winner.items.name,
             amount: winner.items.currentBid,
             first_name: winner.first_name,
+            SSM_image: winner.items.MMS_image,
           });
           return;
         }

@@ -10,6 +10,7 @@ export interface Item {
     emailSent: boolean;
     stripe_Price_id: string;
     sms_sent: boolean;
+    MMS_image: string;
   }
 
   export interface Bids {
@@ -32,5 +33,6 @@ export interface Item {
     item_id: number;
     phone_number: string;
     user_id: string
+    pay_status: boolean;
     items: Item;
   }

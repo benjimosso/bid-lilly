@@ -1,48 +1,103 @@
-// import twilio from "twilio";
-// import { Resend } from "resend";
-// import { EmailTemplate } from "@/components/email-template";
-// import { sendSMS } from "../utils/databaseCalls";
+"use server";
+import { createClient } from "@/utils/supabase/server";
+import { Winners as WinnersInterface } from "../utils/interface";
+import { sendEmail, sendSMS } from "../utils/databaseCalls";
 
-//   // send emails
+export async function UpdatePaymentStatus({ WinnerId }: { WinnerId: number }) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("winners")
+    .update({ pay_status: true })
+    .eq("id", WinnerId)
+    .single();
+  if (error) {
+    console.error("Error in UpdatePaymentStatus function:", error);
+  }
+  if (data) {
+    console.log("Payment Updated");
+    console.log("Winner ID:", WinnerId);
+    console.log("UpdatePaymentStatus Function Response:", data);
+  }
+}
 
-//   export async function sendEmail(
-//     name: string,
-//     itemName: string,
-//     email: string,
-//     itemId: number,
-//     itemImage: string,
-//     amount: number,
-//     phone_number: string
-//   ) {
-//     const resend = new Resend(process.env.RESEND_API_KEY);
-  
-//     try {
-//       const { data, error } = await resend.emails.send({
-//         from: "Bid For Lilly <team@bid-lilly.online>",
-//         to: [email],
-//         subject: "You Won The Bid!",
-//         react: EmailTemplate({
-//           name,
-//           itemName,
-//           itemId,
-//           itemImage,
-//           amount,
-//         }) as React.ReactElement,
-//       });
-//       if (error) {
-//         console.error("Error sending email:", error);
-//         return false;
-//       }
-  
-//       if (data) {
-//         console.log("Email Sent", data);
-//         // await emailSent({ itemId });
-//         await sendSMS({ itemId, phone_number });
-//         return true;
-//       }
+export async function getWinners() {
+  const supabase = createClient();
+  const { data: winners, error: winnersError } = await supabase
+    .from("winners")
+    .select("*, items(*)")
+    .order("created_at", { ascending: true });
+  if (winnersError) {
+    console.log(winnersError);
+  }
+  return (winners as WinnersInterface[]) || [];
+}
+
+export async function sendEmailandSMS(winners: WinnersInterface[]) {
+    try {
+        await Promise.all(
+          winners.map(async (winner: WinnersInterface) => {
+            // If both email and SMS have been sent
+            if (winner.items.emailSent && winner.items.sms_sent) {
+              console.log(`Messages already sent for ${winner.first_name}`);
+              return;
+            }
       
-//     } catch (error) {
-//       console.error("Error in sendEmail function:", error);
-//       return false;
-//     }
-//   }
+            // If neither email nor SMS have been sent
+            if (!winner.items.emailSent && !winner.items.sms_sent) {
+              console.log(`Sending email and SMS to ${winner.first_name}`);
+              await sendEmail(
+                winner.first_name,
+                winner.items.name,
+                winner.email,
+                winner.items.id,
+                winner.items.image,
+                winner.items.currentBid,
+                winner.phone_number
+              );
+              await sendSMS({
+                itemId: winner.items.id,
+                phone_number: winner.phone_number,
+                itemName: winner.items.name,
+                amount: winner.items.currentBid,
+                first_name: winner.first_name,
+                SSM_image: winner.items.MMS_image,
+              });
+              return;
+            }
+      
+            // If email has been sent but SMS has not been sent
+            if (winner.items.emailSent && !winner.items.sms_sent) {
+              console.log(`Email already sent to ${winner.first_name}, sending SMS`);
+              await sendSMS({
+                itemId: winner.items.id,
+                phone_number: winner.phone_number,
+                itemName: winner.items.name,
+                amount: winner.items.currentBid,
+                first_name: winner.first_name,
+                SSM_image: winner.items.MMS_image,
+              });
+              return;
+            }
+      
+            // If SMS has been sent but email has not been sent
+            if (!winner.items.emailSent && winner.items.sms_sent) {
+              console.log(`SMS already sent to ${winner.first_name}, sending email`);
+              await sendEmail(
+                winner.first_name,
+                winner.items.name,
+                winner.email,
+                winner.items.id,
+                winner.items.image,
+                winner.items.currentBid,
+                winner.phone_number
+              );
+              return;
+            }
+          })
+        );
+       
+      }
+ catch (error) {
+    console.error(error);
+  }
+}
