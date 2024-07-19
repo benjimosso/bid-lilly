@@ -8,27 +8,60 @@ export async function POST(req: NextRequest) {
   try {
     await Promise.all(
       winners.map(async (winner: Winners) => {
-        if (winner.items.emailSent) {
-            console.log("Email already sent");
-            return;
-          }
-        const email = await sendEmail(
-          winner.first_name,
-          winner.items.name,
-          winner.email,
-          winner.items.id,
-          winner.items.image,
-          winner.items.currentBid,
-          winner.phone_number
-        );
-        const sms = await sendSMS({
-          itemId: winner.items.id,
-          phone_number: winner.phone_number,
-        });
-
-        if (email && sms) {
-          console.log("Email and SMS sent");
-          await emailSent({ itemId: winner.items.id });
+        // If both email and SMS have been sent
+        if (winner.items.emailSent && winner.items.sms_sent) {
+          console.log(`Messages already sent for ${winner.first_name}`);
+          return;
+        }
+  
+        // If neither email nor SMS have been sent
+        if (!winner.items.emailSent && !winner.items.sms_sent) {
+          console.log(`Sending email and SMS to ${winner.first_name}`);
+          await sendEmail(
+            winner.first_name,
+            winner.items.name,
+            winner.email,
+            winner.items.id,
+            winner.items.image,
+            winner.items.currentBid,
+            winner.phone_number
+          );
+          await sendSMS({
+            itemId: winner.items.id,
+            phone_number: winner.phone_number,
+            itemName: winner.items.name,
+            amount: winner.items.currentBid,
+            first_name: winner.first_name,
+          });
+          return;
+        }
+  
+        // If email has been sent but SMS has not been sent
+        if (winner.items.emailSent && !winner.items.sms_sent) {
+          console.log(`Email already sent to ${winner.first_name}, sending SMS`);
+          await sendSMS({
+            itemId: winner.items.id,
+            phone_number: winner.phone_number,
+            itemName: winner.items.name,
+            amount: winner.items.currentBid,
+            first_name: winner.first_name,
+          });
+          return;
+        }
+  
+        // If SMS has been sent but email has not been sent
+        if (!winner.items.emailSent && winner.items.sms_sent) {
+          console.log(`SMS already sent to ${winner.first_name}, sending email`);
+          await sendEmail(
+            winner.first_name,
+            winner.items.name,
+            winner.email,
+            winner.items.id,
+            winner.items.image,
+            winner.items.currentBid,
+            winner.phone_number
+          );
+          return;
         }
       })
     );

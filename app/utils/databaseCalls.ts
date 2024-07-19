@@ -56,13 +56,30 @@ export async function smsSent({ itemId }: { itemId: number }) {
   console.log("SMS_Sent Function Response:", data);
 }
 
-export async function sendSMS({ itemId, phone_number }: { itemId: number, phone_number: string }) {
+export async function sendSMS({
+  itemId,
+  phone_number,
+  itemName,
+  amount,
+  first_name,
+}: {
+  itemId: number;
+  phone_number: string;
+  itemName: string;
+  amount: number;
+  first_name: string;
+}) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = twilio(accountSid, authToken);
 
   const message = await client.messages.create({
-    body: `You won the bid! for  follow the link to pay https://bid-lilly.vercel.app/stripe-checkout/${itemId}`, // Add link to payment page (twilio is blocking the link)
+    body: `Hi ${first_name}, Thanks for your donation to Lilly's treatment! We are eternally grateful for your support. 🙏🙏🙏 
+
+You won the bid of $${amount} for ${itemName}. 
+
+Pay via Venmo: https://venmo.com/u/Lillian-Luu-4
+or GoFundMe: https://www.gofundme.com/lilys-stage-four-cancer-update`,
     from: "+18337745285",
     to: phone_number, // Add user phone number with dynamic data
   });
@@ -86,14 +103,17 @@ export async function PaymentAmount({ id }: { id: string }) {
     console.error("Error in PaymentAmount function:", error);
   }
   console.log("Item ID", id, "Type:", typeof id);
-  
-  return data
+
+  return data;
 }
 
-
-export async function getSingleItem({itemId}: {itemId: string}) {
+export async function getSingleItem({ itemId }: { itemId: string }) {
   const supabase = createClient();
-  const { data, error } = await supabase.from("items").select("*").eq("id", itemId).single();
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .eq("id", itemId)
+    .single();
   if (error) {
     console.error(error);
   }
@@ -132,10 +152,8 @@ export async function sendEmail(
     if (data) {
       console.log("Email Sent", data);
       await emailSent({ itemId });
-      // await sendMessages();
       return true;
     }
-    
   } catch (error) {
     console.error("Error in sendEmail function:", error);
     return false;
