@@ -3,7 +3,7 @@ import React from "react";
 import { Winners } from "../utils/interface";
 import { Button } from "@/components/ui/button";
 
-export default function SendMessages({ winners }: { winners: Winners[] }) {
+export default function SendMessages({ winners, handleMessages }: { winners: Winners[], handleMessages: any}) {
   const [loading, setLoading] = React.useState(false);
 
   const handleSubmit = async () => {
@@ -31,7 +31,7 @@ export default function SendMessages({ winners }: { winners: Winners[] }) {
   };
 
   return (
-    <Button onClick={handleSubmit} disabled={loading}>
+    <Button onClick={() => handleMessages(winners)} disabled={loading}>
       {loading ? "Sending..." : "Send Messages"}{" "}
     </Button>
   )

@@ -62,12 +62,14 @@ export async function sendSMS({
   itemName,
   amount,
   first_name,
+  SSM_image,
 }: {
   itemId: number;
   phone_number: string;
   itemName: string;
   amount: number;
   first_name: string;
+  SSM_image: string;
 }) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -86,6 +88,7 @@ Thank you for your donation to Lilly's treatment fund! We are eternally grateful
 
 
     from: "+18337745285",
+    mediaUrl:[SSM_image],
     to: phone_number, // Add user phone number with dynamic data
   });
   if (message.errorCode) {
