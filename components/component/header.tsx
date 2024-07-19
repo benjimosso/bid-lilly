@@ -19,7 +19,7 @@ export function Header({ user }: { user: any }) {
       <div className=" flex justify-between items-center">
         <div className="flex gap-6">
           <Link href="/" className="hover:underline flex items-center gap-4">
-            <Image src="/next.svg" alt="logo" width={100} height={100} />
+            <Image src="/next.svg" alt="logo" width={40} height={40} />
             Bid For Lilly
           </Link>
           <Link className="hover:underline" href={"/auctions"}>
