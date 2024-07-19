@@ -74,12 +74,17 @@ export async function sendSMS({
   const client = twilio(accountSid, authToken);
 
   const message = await client.messages.create({
-    body: `Hi ${first_name}, Thanks for your donation to Lilly's treatment! We are eternally grateful for your support. 🙏🙏🙏 
-
-You won the bid of $${amount} for ${itemName}. 
+    body: `Congratulations! You won the bid of $${amount} for ${itemName}. 
 
 Pay via Venmo: https://venmo.com/u/Lillian-Luu-4
-or GoFundMe: https://www.gofundme.com/lilys-stage-four-cancer-update`,
+or GoFundMe: https://www.gofundme.com/lilys-stage-four-cancer-update
+
+Please screenshot your payment confirmation and show to silent auction staff to finalize your purchase.
+
+Thank you for your donation to Lilly's treatment fund! We are eternally grateful for your support. 🙏🙏🙏
+`,
+
+
     from: "+18337745285",
     to: phone_number, // Add user phone number with dynamic data
   });

@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   const messagingResponse = new twiml.MessagingResponse();
 
   // Set the response message
-  messagingResponse.message('For any further assistance, please contact Taylor Tinley at (805) 637-5758.');
+  messagingResponse.message('Thank you for your message! if you have any questions or need further assistance, please feel free to text Taylor at (310)-890-0647');
 
   // Respond with the TwiML content
   return new NextResponse(messagingResponse.toString(), {
