@@ -6,23 +6,25 @@ import { getWinners, sendEmailandSMS, UpdatePaymentStatus } from "./actions";
 import ValidatePayment from "./validatePayment";
 import { revalidatePath } from "next/cache";
 import { Winners as WinnerInterface } from "../utils/interface";
+import { getUser } from "../utils/databaseCalls";
 
 export default async function Winners() {
   const winners = await getWinners();
+  const user = await getUser();
+  console.log(user);
 
   const handlePayment = async (WinnerId: number) => {
-    'use server';
+    "use server";
     await UpdatePaymentStatus({ WinnerId });
     revalidatePath("/winners");
-    
   };
 
   const handleMessages = async (winners: WinnerInterface[]) => {
-    'use server';
+    "use server";
     await sendEmailandSMS(winners);
-    
+
     revalidatePath("/winners");
-  }
+  };
 
   return (
     <div>
@@ -32,7 +34,10 @@ export default async function Winners() {
       ) : (
         <div className="grid lg:grid-cols-4 gap-6">
           {winners.map((winner, index) => (
-            <div key={index} className="border-2 rounded-md border-black p-5 space-y-3">
+            <div
+              key={index}
+              className="border-2 rounded-md border-black p-5 space-y-3"
+            >
               <Image
                 src={winner.items.image}
                 width={120}
@@ -61,10 +66,12 @@ export default async function Winners() {
               ) : (
                 <div className="flex flex-col gap-3">
                   <p className="text-red-400">Payment Pending</p>
-                  <ValidatePayment
-                    handlePayment={handlePayment}
-                    WinnerId={winner.id}
+                  {user?.user && (
+                    <ValidatePayment
+                      handlePayment={handlePayment}
+                      WinnerId={winner.id}
                     />
+                  )}
                 </div>
               )}
             </div>
