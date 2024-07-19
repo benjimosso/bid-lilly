@@ -30,9 +30,9 @@ export default async function Winners() {
       {winners.length === 0 ? (
         <div>No winners yet</div>
       ) : (
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-4 gap-6">
           {winners.map((winner, index) => (
-            <div key={index} className="border-2 border-black p-5 space-y-3">
+            <div key={index} className="border-2 rounded-md border-black p-5 space-y-3">
               <Image
                 src={winner.items.image}
                 width={120}
