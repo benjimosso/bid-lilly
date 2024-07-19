@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { Item, Bids } from "@/app/utils/interface";
 import twilio from "twilio";
+import { Resend } from "resend";
+import { EmailTemplate } from "@/components/email-template";
 
 export async function getItems() {
   const supabase = createClient();
@@ -43,19 +45,52 @@ export async function emailSent({ itemId }: { itemId: number }) {
   console.log("EmailSent Function Response:", data);
 }
 
-export async function sendMessages({ itemId, phone_number }: { itemId: number, phone_number: string }) {
+export async function smsSent({ itemId }: { itemId: number }) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("sms_sent_status", {
+    p_id: itemId,
+  });
+  if (error) {
+    console.error("Error in smsSent function:", error);
+  }
+  console.log("SMS_Sent Function Response:", data);
+}
+
+export async function sendSMS({
+  itemId,
+  phone_number,
+  itemName,
+  amount,
+  first_name,
+}: {
+  itemId: number;
+  phone_number: string;
+  itemName: string;
+  amount: number;
+  first_name: string;
+}) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = twilio(accountSid, authToken);
 
   const message = await client.messages.create({
-    body: `You won the bid! for  follow the link to pay https://bid-lilly.vercel.app/stripe-checkout/${itemId}`, // Add link to payment page (twilio is blocking the link)
+    body: `Hi ${first_name}, Thanks for your donation to Lilly's treatment! We are eternally grateful for your support. 🙏🙏🙏 
+
+You won the bid of $${amount} for ${itemName}. 
+
+Pay via Venmo: https://venmo.com/u/Lillian-Luu-4
+or GoFundMe: https://www.gofundme.com/lilys-stage-four-cancer-update`,
     from: "+18337745285",
     to: phone_number, // Add user phone number with dynamic data
   });
-  
-  console.log("SMS Sent")
-  console.log(message.body);
+  if (message.errorCode) {
+    console.error("Error in sendSMS function:", message.errorCode);
+  }
+  if (message) {
+    console.log("SMS Sent", message);
+    await smsSent({ itemId });
+  }
+  return message;
 }
 
 export async function PaymentAmount({ id }: { id: string }) {
@@ -68,16 +103,59 @@ export async function PaymentAmount({ id }: { id: string }) {
     console.error("Error in PaymentAmount function:", error);
   }
   console.log("Item ID", id, "Type:", typeof id);
-  
-  return data
+
+  return data;
 }
 
-
-export async function getSingleItem({itemId}: {itemId: string}) {
+export async function getSingleItem({ itemId }: { itemId: string }) {
   const supabase = createClient();
-  const { data, error } = await supabase.from("items").select("*").eq("id", itemId).single();
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .eq("id", itemId)
+    .single();
   if (error) {
     console.error(error);
   }
   return data as Item;
+}
+
+export async function sendEmail(
+  name: string,
+  itemName: string,
+  email: string,
+  itemId: number,
+  itemImage: string,
+  amount: number,
+  phone_number: string
+) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "Bid For Lilly <team@bid-lilly.online>",
+      to: [email],
+      subject: "You Won The Bid!",
+      react: EmailTemplate({
+        name,
+        itemName,
+        itemId,
+        itemImage,
+        amount,
+      }) as React.ReactElement,
+    });
+    if (error) {
+      console.error("Error sending email:", error);
+      return false;
+    }
+
+    if (data) {
+      console.log("Email Sent", data);
+      await emailSent({ itemId });
+      return true;
+    }
+  } catch (error) {
+    console.error("Error in sendEmail function:", error);
+    return false;
+  }
 }

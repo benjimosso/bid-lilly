@@ -9,6 +9,7 @@ export interface Item {
     currentBid: number;
     emailSent: boolean;
     stripe_Price_id: string;
+    sms_sent: boolean;
   }
 
   export interface Bids {
@@ -20,4 +21,16 @@ export interface Item {
     user_id: string;
     item_id: number;
     phone_number: string;
+  }
+
+  export interface Winners {
+    id: number;
+    created_at: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    item_id: number;
+    phone_number: string;
+    user_id: string
+    items: Item;
   }
