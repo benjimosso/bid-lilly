@@ -9,6 +9,7 @@ import DisplayWinners from "./displaywinners";
 export default async function Winners() {
   const winners = await getWinners();
   const user = await getUser();
+  let loading = false;
 
   const handlePayment = async (WinnerId: number) => {
     "use server";
@@ -18,13 +19,18 @@ export default async function Winners() {
 
   const handleMessages = async (winners: WinnerInterface[]) => {
     "use server";
-    await sendEmailandSMS(winners);
-
-    revalidatePath("/winners");
+    const emailandtext = await sendEmailandSMS(winners);
+    console.log("Email and Text Sent", emailandtext);
+    if (emailandtext) {
+      revalidatePath("/winners");
+      return true;
+    } else {
+      return false;
+    }
   };
 
   return (
-    <DisplayWinners winners={winners} handleMessages={handleMessages} handlePayment={handlePayment} user={user} />
+    <DisplayWinners winners={winners} handleMessages={handleMessages} handlePayment={handlePayment} user={user}/>
     // <div>
     //   <h1 className="text-4xl font-bold">Winners</h1>
     //   {winners.length === 0 ? (

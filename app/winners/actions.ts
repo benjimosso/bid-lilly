@@ -130,9 +130,10 @@ export async function sendEmailandSMS(winners: WinnersInterface[]) {
             }
           })
         );
-       
+       return true;
       }
  catch (error) {
     console.error(error);
+    return false;
   }
 }
