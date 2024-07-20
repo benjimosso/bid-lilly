@@ -74,6 +74,7 @@ export async function sendSMS({
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = twilio(accountSid, authToken);
+  const imageUrl = SSM_image ? SSM_image : "https://iyvaxprhtbubmilkujdr.supabase.co/storage/v1/object/public/bid-lilly/MMS%20Images/lilllyGofundme.png";
 
   const message = await client.messages.create({
     body: `Congratulations! You won the bid of $${amount} for ${itemName}. 
@@ -88,7 +89,7 @@ Thank you for your donation to Lilly's treatment fund! We are eternally grateful
 
 
     from: "+18337745285",
-    mediaUrl:[SSM_image],
+    mediaUrl:[imageUrl],
     to: phone_number, // Add user phone number with dynamic data
   });
   if (message.errorCode) {
