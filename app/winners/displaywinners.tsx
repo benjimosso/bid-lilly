@@ -19,6 +19,9 @@ export default function DisplayWinners({
   user: any;
 }) {
   const [loading, setLoading] = React.useState(false);
+  const [errorWithMessages, setErrorWithMessages] = React.useState('');
+  // const loading = false;
+  console.log("Loading", loading);
   const supabase = createClient();
   const router = useRouter();
 
@@ -107,9 +110,23 @@ export default function DisplayWinners({
       )}
       <div className="pt-6">
         {user && user.user && user.user.email === "benjimosso@hotmail.com" ? (
-          <Button onClick={() => handleMessages(winners)} disabled={loading}>
+          <div>
+          <Button onClick={async () => {
+            setLoading(true);
+            const waitforSMSandEmail = await handleMessages(winners)
+            if (waitforSMSandEmail) {
+              setLoading(false);
+              setErrorWithMessages("")
+              return;
+            } else {
+              setLoading(false);
+              setErrorWithMessages("Error sending messages")
+            }
+            }} disabled={loading}>
             {loading ? "Sending..." : "Send Messages"}
           </Button>
+          <p className="text-red-400 pt-3">{errorWithMessages}</p>
+          </div>
         ) : null}
       </div>
     </div>
